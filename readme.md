@@ -54,6 +54,9 @@ You should see three containers:
   **[http://localhost:8080](http://localhost:8080)**  
   This will load the KrungThon Bank web application.
 
+- Open Krongthon Homepage:
+  - [http://localhost:8080/public/home.php](http://localhost:8080/public/home.php)
+
 ### 2. phpMyAdmin
 - Open your browser and navigate to:  
   **[http://localhost:8081](http://localhost:8081)**  
