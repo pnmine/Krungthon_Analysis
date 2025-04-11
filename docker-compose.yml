@@ -1,0 +1,51 @@
+version: "3.8" 
+
+services:
+  # Service สำหรับ Web Server (Apache + PHP)
+  web:
+    build: .
+    container_name: krungthon_web
+    ports:
+      - "8080:80" # Map Port 8080 ของ Host ไป Port 80 Container
+    volumes:
+      # Mount โฟลเดอร์โปรเจกต์ไปยัง Document Root ของ Apache (เหมือนเปลี่ยน DocumentRoot)
+      - ./KrungThon-Bank-master:/var/www/html
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  # Service สำหรับ Database (MariaDB - Auto Import)
+  db:
+    image: mariadb:10.4.32
+    container_name: krungthon_db
+    ports:
+      - "3307:3306" # Map Port 3307 ของ Host ไป Port 3306 Container
+    environment:
+      MYSQL_DATABASE: krungthon_bank # สร้าง Database ชื่อนี้
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes" # อนุญาต root ไม่มีรหัสผ่าน (เหมือน XAMPP default และโค้ด)
+    volumes:
+      # Mount โฟลเดอร์ database ทั้งหมดเข้า init directory
+      - ./database:/docker-entrypoint-initdb.d
+      # Volume เก็บข้อมูล DB ถาวร
+      - db_data:/var/lib/mysql # Volume เก็บข้อมูล DB ถาวร
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: krungthon_phpmyadmin
+    ports:
+      - "8081:80" # Map Port 8081 ของ Host ไป Port 80 phpMyAdmin
+    environment:
+      PMA_HOST: db # บอก phpMyAdmin ว่า Database Server อยู่ที่ Service ชื่อ 'db'
+      PMA_PORT: 3306 # Port ของ MariaDB ภายใน Docker Network
+      # UPLOAD_LIMIT: 1G  # (Optional) เพิ่มขนาดไฟล์ Upload เผื่อไฟล์ .sql ใหญ่
+    depends_on:
+      - db
+    restart: unless-stopped
+
+# ประกาศ Named Volume
+volumes:
+  db_data:
+    # Volume เก็บข้อมูล DB ถาวร
+    # ใช้สำหรับเก็บข้อมูลของ MariaDB เพื่อไม่ให้หายเมื่อ Container หยุดทำงาน
+    # สามารถใช้คำสั่ง `docker volume ls` เพื่อตรวจสอบ Volume ที่สร้างขึ้น
