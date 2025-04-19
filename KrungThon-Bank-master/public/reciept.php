@@ -70,6 +70,11 @@
 
         <td colspan= "2"><?php echo 'Fee : '.$row['fee'];?></td>
     </tr>    
+
+    <tr>
+
+        <td colspan= "2"><?php echo 'Memo : '.$row['transaction_memo'];?></td>
+    </tr>    
     
         
     <tr>
